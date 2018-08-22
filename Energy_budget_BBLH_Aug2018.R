@@ -15,17 +15,12 @@ library(ggplot2)
 library(dplyr) # Trying this out for stacking NEE with and without torpor
 library(reshape2) # Trying this out for stacking NEE with and without torpor
 library(gridExtra)
-#library(cowplot) #for plot_grid function instead of grid.arrange
-#library(tidyverse) #for the stacked bar plot- labeled as such in case you want to delete this later
-
 
 setwd("C:\\Users\\nushi\\Dropbox\\Anusha Committee\\BBLH_EnergyBudget\\Submission_FuncEcol\\Data")
 
 ## Read in files 
 #Includes min and max 24h cost by varying activity; per activity, thermo, NEE and BMR scenario; and adjusting hovering for thermoregulatory substitution
 energymodels <- read.csv("EnergyBudget_model_values.csv") 
-#act_models <- read.csv("Activity_modeled.csv") #Varying HMR, FLMR, RMR
-#percentEB <- read.csv("percentEB.csv")
 dlw_bblh <- read.csv("DLW_summary.csv")
 costas <- read.csv("Costas1986_VO2_DRPowers.csv") ## READ IN COSTA's for Supp fig S3
 
@@ -296,7 +291,6 @@ ggplot(valida_B, aes(Eqb_time_min, Initial_enrichment_ppm_per_mg)) + geom_point(
 ggplot(valida_C, aes(DLW_dose_g, CO2_production_mL_h)) + geom_point(size=3, alpha=0.9) + my_theme +
   xlab("DLW dose (g)") + ylab(bquote(~CO[2]~ 'production (mL/hr)')) +
   geom_smooth(method='lm') + theme(legend.key.height=unit(3, 'lines')) + ylim(0,80)
-
 
 #### Figure S3: Costa's (Calyptae costae) Scholander-Irving curve for metabolic rate vs. temperature ####
 ggplot(costas, aes(Temperature, VO2_ml.g.h)) + geom_point(size=2) + my_theme +
