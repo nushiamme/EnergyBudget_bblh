@@ -11,7 +11,7 @@ require(dplyr)
 require(ggthemes) ## Trying out Tufteboxplot
 
 ## Set working directory
-setwd("C:\\Users\\nushi\\Dropbox\\Anusha Committee\\BBLH_EnergyBudget\\Tables")
+setwd("C:\\Users\\nushi\\Dropbox\\Anusha Committee\\BBLH_EnergyBudget\\Submission_FuncEcol\\Data")
 ## wd at GFU
 #setwd("/Users/anshankar/Dropbox/Anusha Committee/BBLH_EnergyBudget/Tables")
 
@@ -26,9 +26,6 @@ colnames(floralsumm)[colnames(floralsumm)=="Pre_post"] <- "Season"
 floralsumm$Season<- revalue(floralsumm$Season, c("Pre"="Dry", "Post"="Early-wet"))
 flo <- group_by(floralsumm, Site, Transect, Season)
 dflo <- summarize(flo, Flowers = sum(TotalFlowers, na.rm = T))
-#dhumm <- summarize(flo, Hummcount = sum(HummSp, na.rm=T))
-#dfru <- summarize(flo, Fruits = sum(Fruits, na.rm=T))
-#dbud <- summarize(flo, Buds = sum(Buds, na.rm=T))
 dflo$Site_Season <- paste(dflo$Site, dflo$Season, sep="_")
 dflo$Site_Season <- factor(dflo$Season, levels = c("Harshaw_Dry", "Harshaw_Early-wet", 
                                                        "Sonoita_Dry", "Sonoita_Early-wet"))
@@ -67,18 +64,8 @@ give.n <- function(x){
 dflo$Pre_post <- factor(dflo$Season, levels = c("Dry", "Early-wet"))
 dcrop$Pre_post <- factor(dcrop$Season, levels = c("Dry", "Early-wet"))
 
-ggplot(dcrop_summ[dcrop_summ$Site %in% c("Harshaw", "Sonoita"),], 
-       aes(Transect, 4.184*Calories, label=round(4.184*Calories, digits = 0))) + 
-  geom_point(aes(color=Season, size=Calories)) + facet_grid(~Site, space='free') +
-  geom_text(hjust=0, nudge_x = 0.2, nudge_y=0.3, size=5) +
-  scale_color_manual(values = c('red', 'black')) + 
-  ylab("kiloJoules") + guides(size=F) +
-  #geom_bar(stat="identity", aes(fill=Pre_post), size=4) + 
-  #scale_fill_manual(values = c('red', 'black')) + scale_shape_manual(values=c(20,3)) +
-  my_theme +  theme(axis.text.x = element_text(size=15, angle=30, vjust=0.95, hjust=1), 
-                    legend.key.height = unit(3, 'lines'))
 
-## YES!! Good plot of resources at Hawshaw vs Sonoita, Pre- vs early-monsoon. May 14, 2018
+## YES!! Good plot of resources at Hawshaw vs Sonoita, Dry- vs early-wet
 ggplot(dflo[dflo$Flowers>0,], aes(Pre_post, log(Flowers))) + #facet_grid(~Site, scales="free_x") +
   geom_boxplot(aes(fill=Site), position="dodge") + 
   geom_point(aes(x=Pre_post), size=3, alpha=0.8) + facet_grid(~Site) +
