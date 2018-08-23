@@ -41,6 +41,7 @@ give.n <- function(x){
 
 #### Plots ####
 dflo$Pre_post <- factor(dflo$Season, levels = c("Dry", "Early-wet"))
+
 ## Figure 1e: plot of resources at Hawshaw vs Sonoita, Dry- vs early-wet
 ggplot(dflo[dflo$Flowers>0,], aes(Pre_post, log(Flowers))) + #facet_grid(~Site, scales="free_x") +
   geom_boxplot(aes(fill=Site), position="dodge") + 

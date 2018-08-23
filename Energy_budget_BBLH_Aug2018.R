@@ -42,7 +42,9 @@ give.n <- function(x){
   return(c(y = mean(x), label = length(x)))
 }
 
-#### AUGUST 2018 ####
+#### Aggregating energy budget models so they can be summarised in a useful way ####
+
+## Minimum per-minute energy costs for activity
 m_energymodels_min <- as.data.frame(as.list(aggregate(energymodels$kJ_min_day_HovThermo_adj,
                                                       by=list(energymodels$Activity_budget_type,
                                                               energymodels$BMR_assump,
@@ -53,6 +55,7 @@ names(m_energymodels_min) <- c("Activity_budget_type", "BMR_category", "Thermore
                                "Min_kJ_day")
 head(m_energymodels_min)
 
+## Mean per-minute energy costs for activity
 m_energymodels_mean <- as.data.frame(as.list(aggregate(energymodels$kJ_adjBMR_day_HovThermo_adj,
                                                       by=list(energymodels$Activity_budget_type,
                                                               energymodels$BMR_assump,
@@ -62,6 +65,7 @@ m_energymodels_mean <- as.data.frame(as.list(aggregate(energymodels$kJ_adjBMR_da
 names(m_energymodels_mean) <- c("Activity_budget_type", "BMR_category", "Thermoreg_scenario", "Site_proxy",
                                "kJ_day")
 
+## Maximum per-minute energy costs for activity
 m_energymodels_max <- as.data.frame(as.list(aggregate(energymodels$kJ_max_day_HovThermo_adj,
                                                       by=list(energymodels$Activity_budget_type,
                                                               energymodels$BMR_assump,
@@ -71,6 +75,7 @@ m_energymodels_max <- as.data.frame(as.list(aggregate(energymodels$kJ_max_day_Ho
 names(m_energymodels_max) <- c("Activity_budget_type", "BMR_category", "Thermoreg_scenario", "Site_proxy",
                                "Max_kJ_day")
 
+## Merging the min, mean, and max aggregated data frames
 m_energymodels <- merge(m_energymodels_min,m_energymodels_mean,
       by=c("Activity_budget_type", "BMR_category", "Thermoreg_scenario", "Site_proxy"))
 
@@ -78,11 +83,11 @@ m_energymodels <- merge(m_energymodels,m_energymodels_max,
                             by=c("Activity_budget_type", "BMR_category", "Thermoreg_scenario", "Site_proxy"))
 
 
+## Ordering the activity budget types in a useful way- least to most active
 m_energymodels$Activity_budget_type <- factor(m_energymodels$Activity_budget_type,
                                                   levels= c("5_20_75", "15_15_70", "25_30_45", "40_40_20"))
 m_energymodels$Activity_bmr_thermo <- paste(m_energymodels$Activity_budget_type, 
                                                 m_energymodels$BMR_category, m_energymodels$Thermoreg_scenario, sep= "_")
-
 
 mm_energymodels <- melt(m_energymodels, 
                             id.vars = c("Activity_budget_type", "BMR_category", "Thermoreg_scenario", "Site_proxy"),
@@ -196,22 +201,6 @@ names(kJ_split_full_model) <- c("Model_component", "Thermoreg_scenario",
 write.csv(kJ_split_full_model,file="kJ_splitEB_May.csv")
 
 #### plots ####
-#### Activity plots ####
-## Stacked bar plots for breaking down energy budget, just one site+date at a time
-pl_vSC0207 <- ggplot(m_energymodels_stack[m_energymodels_stack$Site_date=="SC207",], aes(Thermoreg_scenario, y=value, fill=variable)) + 
-  facet_grid(~Activity_budget_type, scales='free_x') +
-  geom_bar(stat="identity") +
-  scale_fill_manual(labels = c("Nighttime no torpor", "Nighttime with torpor", "Daytime activity", "Thermoregulation + BMR"),
-                     values = c("#B47ED5", "lavender", "red", "dark blue")) +
-  #geom_text(aes(x=Thermoreg_scenario, y =kJ_adjBMR_day_HovThermo_adj, label=kJ_adjBMR_day_HovThermo_adj), size=5) +
-  xlab("Thermoregulatory scenarios") +
-  ylab("kiloJoules per day\n") +
-  ggtitle("Sonoita Creek dry season") +
-  my_theme + theme(axis.text.x = element_text(angle=30, size=15, hjust=0.5, vjust=0.5),
-                   legend.key.height=unit(3, 'lines'), plot.title = element_text(hjust=0.5)) + 
-  guides(fill = guide_legend(title="Energy budget \n component"))
-
-
 ## Figure 2a
 dlw_bblh$ind_band <- dlw_bblh$Band_no
 dlw_bblh$ind_band[dlw_bblh$ind_band==""] <- NA
@@ -271,23 +260,38 @@ all_model_plot <- ggplot(NULL, aes(Site_proxy, kJ_day)) +
   xlab("Site and season") + ylab("")#ylab("Daily \n energy expenditure (kJ)")
 
 
-## Figure 2, arranging DLW plot with all model plot
+#### Figure 2, arranging DLW plot with all model plot ####
 grid.arrange(dlw_indiv, all_model_plot, nrow=1, widths = c(1,2))
+
+#### Figure 3 ####
+## Stacked bar plots for breaking down energy budget, just one site+date at a time
+pl_vSC0207 <- ggplot(m_energymodels_stack[m_energymodels_stack$Site_date=="SC207",], aes(Thermoreg_scenario, y=value, fill=variable)) + 
+  facet_grid(~Activity_budget_type, scales='free_x') +
+  geom_bar(stat="identity") +
+  scale_fill_manual(labels = c("Nighttime no torpor", "Nighttime with torpor", "Daytime activity", "Thermoregulation + BMR"),
+                    values = c("#B47ED5", "lavender", "red", "dark blue")) +
+  #geom_text(aes(x=Thermoreg_scenario, y =kJ_adjBMR_day_HovThermo_adj, label=kJ_adjBMR_day_HovThermo_adj), size=5) +
+  xlab("Thermoregulatory scenarios") +
+  ylab("kiloJoules per day\n") +
+  ggtitle("Sonoita Creek dry season") +
+  my_theme + theme(axis.text.x = element_text(angle=30, size=15, hjust=0.5, vjust=0.5),
+                   legend.key.height=unit(3, 'lines'), plot.title = element_text(hjust=0.5)) + 
+  guides(fill = guide_legend(title="Energy budget \n component"))
 
 
 #### Supplementary plots ####
 ####Figure S1: DLW Validation plots ####
-# Enrichment vs. DLW dose (g)
+# Figure S1a: Enrichment vs. DLW dose (g)
 ggplot(valida_A, aes(DLW_dose_g, O_18_Enrichment_ppm, col=Treatment)) + geom_point(size=3, alpha=0.9) + my_theme +
   scale_color_manual(values = c("black", "grey70")) + xlab("DLW dose (g)") + ylab(bquote(~O^18~ 'Enrichment (ppm)')) +
   geom_smooth(method='lm') + theme(legend.key.height=unit(3, 'lines')) + ylim(0,6000)
 
-# Initial enrichment vs equilibration time
+# Figure S1b: Initial enrichment vs equilibration time
 ggplot(valida_B, aes(Eqb_time_min, Initial_enrichment_ppm_per_mg)) + geom_point(size=3, alpha=0.9) + my_theme +
   xlab("Equilibration time (min)") + ylab("Initial enrichment (ppm/mg)") +
   geom_smooth(method='lm') + ylim(0,30)
 
-# CO2 production vs. DLW dose (g)
+# Figure S1c: CO2 production vs. DLW dose (g)
 ggplot(valida_C, aes(DLW_dose_g, CO2_production_mL_h)) + geom_point(size=3, alpha=0.9) + my_theme +
   xlab("DLW dose (g)") + ylab(bquote(~CO[2]~ 'production (mL/hr)')) +
   geom_smooth(method='lm') + theme(legend.key.height=unit(3, 'lines')) + ylim(0,80)

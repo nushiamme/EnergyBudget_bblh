@@ -1,4 +1,4 @@
-**Paper authors: Anusha Shankar\, Joseph R Canepa, Catherine H Graham, Susan M Wethington, Donald R Powers**
+**Paper authors: A Shankar, JR Canepa, CH Graham, SM Wethington, DR Powers**
 
 Code by: Anusha Shankar, github/nushiamme; contact: or nushiamme<at>gmail<dot>com for questions about code/datasets
 
@@ -15,15 +15,15 @@ Figures not listed here were conceptual figures made in powerpoint or in prism.
     -   *Figure 1d*: Distribution of temperatures at Harshaw and Sonoita, facetted by day and night.
 
 -   **Energy\_budget\_BBLH\_Aug2018.R** - Needs input files *"EnergyBudget_model_values.csv"*, *"DLW_summary"*, *"Costas1986_VO2_DRPowers.csv"*, *"Validation_Enrichment_dose_A.csv"*, *"Validation_enrichment_eqb_B.csv"*, and *"Validation_CO2produc_dose_C.csv"*; Contains code to analyse energy budget models and doubly labelled water data 
-    -   *Figure 2*: 
-    -   *Figure 3*: 
-    -   *Supplementary Figure S1*: 
-    -   *Supplementary Figure S3*: 
+    -   *Figure 2*: Energy budget models compared against doubly labelled water (DLW) measurements of daily energy expenditure. Figure 2a has DLW measurements, with individuals recaptured multiple times as colored points. Figure 2b has DLW values compared directly with model values.
+    -   *Figure 3*: Stacked bar graph showing the different modeled components of the daily energy budget 
+    -   *Supplementary Figure S1*: Validation of the modified DLW method
+    -   *Supplementary Figure S3*: Scholander-Irving curve for Costa's hummingbirds
     
--   **Energy\_budget\_resources.R** - Needs input files *"FloralCensusData2013.csv"*, *"Costas1986_VO2_DRPowers.csv"*, *"Validation_Enrichment_dose_A.csv"*, *"Validation_enrichment_eqb_B.csv"*, and *"Validation_CO2produc_dose_C.csv"*; Contains code to analyse energy budget models and doubly labelled water data 
+-   **Energy\_budget\_resources.R** - Needs input files *"FloralCensusData2013.csv"* (contact A Shankar for access), *"Costas1986_VO2_DRPowers.csv"*, *"Validation_Enrichment_dose_A.csv"*, *"Validation_enrichment_eqb_B.csv"*, and *"Validation_CO2produc_dose_C.csv"*; Contains code to analyse energy budget models and doubly labelled water data 
     -   *Table S3*: 
 
-#### Packages you will need for all the scripts:
+#### Packages you will need for all three scripts:
 
     + reshape2 or reshape
     + ggplot2
