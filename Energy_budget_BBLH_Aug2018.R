@@ -1,35 +1,42 @@
 ## Code for paper titled:
 #"Assessing energy budget flexibility in a small endotherm"
-## Paper authors: Anusha Shankar, 
-# Catherine H Graham, Joseph R Canepa, Susan M Wethington, Donald R Powers
+## Paper authors: A Shankar, CH Graham, JR Canepa, SM Wethington, DR Powers
 ## Code by: Anusha Shankar, github/nushiamme; 
-# contact: anusha<dot>shankar<at>stonybrook<dot>edu or nushiamme<at>gmail<dot>com for questions about code
+# contact: nushiamme<at>gmail<dot>com for questions about code
 
-### Contents
-## Setup, read files in, format data
-##
+### Contents ####
+## Setup, 
+## Read files in
+## General functions
+## Format data - aggregating and melting
+## Figure 2: Energy budget models compared against doubly labelled water (DLW) measurements of daily energy expenditure. 
+  #Figure 2a has DLW measurements, with individuals recaptured multiple times as colored points. 
+  #Figure 2b has DLW values compared directly with model values
+## Figure 3: Stacked bar graph showing the different modeled components of the daily energy budget 
+## Figure S1: Validation of the modified DLW method
+## Figure S3: Scholander-Irving curve for Costa's hummingbirds
 
 
 #### Setup ####
 library(ggplot2)
-library(dplyr) # Trying this out for stacking NEE with and without torpor
-library(reshape2) # Trying this out for stacking NEE with and without torpor
+library(dplyr) 
+library(reshape2) 
 library(gridExtra)
 
 setwd("C:\\Users\\nushi\\Dropbox\\Anusha Committee\\BBLH_EnergyBudget\\Submission_FuncEcol\\Data")
 
-## Read in files 
+#### Read in files #### 
 #Includes min and max 24h cost by varying activity; per activity, thermo, NEE and BMR scenario; and adjusting hovering for thermoregulatory substitution
-energymodels <- read.csv("EnergyBudget_model_values.csv") 
-dlw_bblh <- read.csv("DLW_summary.csv")
-costas <- read.csv("Costas1986_VO2_DRPowers.csv") ## READ IN COSTA's for Supp fig S3
+energymodels <- read.csv("EnergyBudget_model_values.csv") # Fir figures 2b and 3
+dlw_bblh <- read.csv("DLW_summary.csv") ## For Figure 2 
+costas <- read.csv("Costas1986_VO2_DRPowers.csv") ## For Supp fig S3
 
-# Files for DLW validation plots for supplement
+# Files for Figure S1: DLW validation plots for supplement
 valida_A <- read.csv("Validation_Enrichment_dose_A.csv")
 valida_B <- read.csv("Validation_enrichment_eqb_B.csv")
 valida_C <- read.csv("Validation_CO2produc_dose_C.csv")
 
-## General functions
+#### General functions ####
 my_theme <- theme_classic(base_size = 32) + 
   theme(panel.border = element_rect(colour = "black", fill=NA))
 
@@ -201,7 +208,7 @@ names(kJ_split_full_model) <- c("Model_component", "Thermoreg_scenario",
 write.csv(kJ_split_full_model,file="kJ_splitEB_May.csv")
 
 #### plots ####
-## Figure 2a
+#### Figure 2a ####
 dlw_bblh$ind_band <- dlw_bblh$Band_no
 dlw_bblh$ind_band[dlw_bblh$ind_band==""] <- NA
 ## Just DLW boxplots and points with recap individuals colored for Figure 2 (as of April 3, 2017)
@@ -222,7 +229,7 @@ dlw_indiv <- ggplot(dlw_bblh, aes(Site_proxy, kJ_day)) +
   xlab("Site and season") + 
   ylab("Daily \n energy expenditure (kJ)")
 
-## Figure 2b
+#### Figure 2b ####
 ## AUGUST 2018 plot adjusting Hovering and thermo, and including individual variation in activity costs
 all_model_plot <- ggplot(NULL, aes(Site_proxy, kJ_day)) +
   geom_boxplot(data=dlw_bblh,aes(Site_proxy, kJ_day), fill="grey90",  width = 0.5, lwd=1) + 
@@ -280,7 +287,7 @@ pl_vSC0207 <- ggplot(m_energymodels_stack[m_energymodels_stack$Site_date=="SC207
 
 
 #### Supplementary plots ####
-####Figure S1: DLW Validation plots ####
+#### Figure S1: DLW Validation plots ####
 # Figure S1a: Enrichment vs. DLW dose (g)
 ggplot(valida_A, aes(DLW_dose_g, O_18_Enrichment_ppm, col=Treatment)) + geom_point(size=3, alpha=0.9) + my_theme +
   scale_color_manual(values = c("black", "grey70")) + xlab("DLW dose (g)") + ylab(bquote(~O^18~ 'Enrichment (ppm)')) +
