@@ -7,7 +7,7 @@ Code by: Anusha Shankar, github/nushiamme; contact: nushiamme<at>gmail<dot>com f
 The code is organized by data type into 3 scripts, for
 1. Temperature and thermoregulatory cost calculations,
 2. The energy budget model, and
-3. Floral resources (abundance and calorie calculations)
+3. Floral resources (floral abundance)
 
 Figures not listed here were conceptual figures made in powerpoint or in prism.
 
