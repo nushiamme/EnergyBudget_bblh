@@ -1,6 +1,6 @@
-**Paper authors: A Shankar, JR Canepa, CH Graham, SM Wethington, DR Powers**
+**Paper authors: A Shankar, CH Graham, JR Canepa, SM Wethington, DR Powers**
 
-Code by: Anusha Shankar, github/nushiamme; contact: or nushiamme<at>gmail<dot>com for questions about code/datasets
+Code by: Anusha Shankar, github/nushiamme; contact: nushiamme<at>gmail<dot>com for questions about code/datasets
 
 #### Code organisation
 

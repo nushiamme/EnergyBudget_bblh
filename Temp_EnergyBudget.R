@@ -1,7 +1,19 @@
 ## Analyzing and plotting ambient and chamber temperature data for BBLH energy budget paper
 ## To make a thermoregulatory model for HC and SC
-## Script by Anusha Shankar
+## Script by Anusha Shankar, contact nushiamme<at>gmail<dot>com for questions about code/datasets
 
+### Contents ####
+## Read packages in
+## Read files in
+## General functions
+## Format data - New columns, etc.
+## Figure 1d: Temperature per site, faceted by Day/Night 
+## Running thermoregulatory models
+  # Random model
+  # Minimum thermoregulatory cost model
+  # Max thermoregulatory cost model
+
+## Read in packages
 library(reshape)
 library(ggplot2)
 library(dplyr)
@@ -56,10 +68,10 @@ ggplot(temp_details, aes(Ta_mean)) +
   scale_fill_manual(values = c('red', 'grey'), labels=c("Sonoita", "Harshaw")) +
   scale_color_manual(values = c('red', 'grey'), guide=F)
 
-#### Building a model for thermoregulatory costs ####
+# Building a model for thermoregulatory costs ####
 
 #### First, subset each site and the dates needed (from DLW data), make it a separate dataframe, 
-## then save it as a list where each hour from the day is a separate object ####
+# then save it as a list where each hour from the day is a separate object ####
 
 te_hc_1306 <- m.te_det[m.te_det$Site=="HC" & m.te_det$DayMonth=="13,6",]
 telist_hc_1306 <- split(te_hc_1306, te_hc_1306$Hour)
@@ -93,7 +105,7 @@ talist_sc_0207 <- split(ta_sc_0207, ta_sc_0207$Hour)
 ta_sc_0907 <- m.ta_det[m.ta_det$Site=="SC" & m.ta_det$DayMonth=="9,7",]
 talist_sc_0907 <- split(ta_sc_0907, ta_sc_0907$Hour)
 
-## Randomly sampling temperatures to get random theroregulatory costs ####
+#### Randomly sampling temperatures to get random theroregulatory costs ####
 ## Using function to pull random values from 4 sensors at a site, with replacement, to represent 
 # temperatures in 15 min intervals
 rand_therm <- function (list_day) {
@@ -144,7 +156,7 @@ compile_iters('9070HC_test.*.RDS$')
 compile_iters('207_test.*.RDS$')
 compile_iters('9070SC_test.*.RDS$')
 
-
+#### Minimum thermoregulatory costs ####
 ## Simmilar function as above, but using lowest 4 thermoreg costs from that hour and day, rather than 
 ## randomly sampling 4 temperatures across the landscape
 minTemp_therm <- function (list_day) {
@@ -172,8 +184,8 @@ minTemp_therm(talist_hc_0907)
 minTemp_therm(talist_sc_0207)
 minTemp_therm(talist_sc_0907)
 
+#### Maximum thermoregulatory costs ####
 ## Function to calculate thermoregulatory costs if the bird spent its time, every hour, with the 
-# highest thermoregulatory costs per hour
 # highest thermoregulatory costs per hour
 maxTemp_therm <- function (list_day) {
   iter <- lapply(list_day, function(x) {
