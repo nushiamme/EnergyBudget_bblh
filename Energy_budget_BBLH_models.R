@@ -8,7 +8,10 @@ require(reshape)
 require(plyr)
 require(dplyr)
 require(ggthemes) ## Trying out Tufteboxplot
-library(stringr)
+require(stringr)
+require(MCMCglmm)
+require(lme4)
+library(lmerTest)
 
 ## Set working directory
 setwd("C:\\Users\\nushi\\Dropbox\\Anusha Committee\\BBLH_EnergyBudget\\Submission_FuncEcol\\Data/")
@@ -52,7 +55,8 @@ dcrop_summ <- summarize(dcrop, Calories = sum(Calories, na.rm = T))
 flo.season_site_sum <- aggregate(floralsumm$TotalFlowers, 
                                  by=list(floralsumm$Season, floralsumm$Site), FUN="sum", na.rm=T)
 names(flo.season_site_sum) <- c("Season", "Site", "Sum_flowers")
-levels(flo.season_site_sum$Site) <- droplevels(flo.season_site_sum$Site)
+flo.season_site_sum$Site <- droplevels(flo.season_site_sum$Site)
+flo.season_site_sum$Site<- revalue(flo.season_site_sum$Site, c("Harshaw"="HC", "Sonoita"="SC"))
 
 ## Temperature aggregates for glmm model, Feb 24, 2019
 temp.agg <- aggregate(m.ta_det$Ta, 
@@ -69,9 +73,44 @@ temp.summ <- ddply(m.ta_det, .(DayMonthYear, Site), summarise,
 
 dlw_merged_models <- merge(dlw_bblh, temp.summ, by=c("Site", "DayMonthYear"))
 
-dlw_merged_models <- merge(dlw_merged_models, flo.season_site_sum[,"Sum_flowers"], by=c("Site", "Season"))
+dlw_merged_models <- merge(dlw_merged_models, flo.season_site_sum, by=c("Site", "Season"))
 
 
 #### Models ####
-DEE_resource_temps <- MCMCglmm(DEE~Flowers+Ta_min+Season,
-                               data=)
+DEE_full <- lmer(kJ_day~log(Sum_flowers)+ meanTemp + maxTemp +Initial_mass_g +(1|Season), REML=F,
+                               data= dlw_merged_models)
+summary(DEE_full)
+coef(DEE_full)
+plot(DEE_full)
+plot(ranef(DEE_full))
+plot(residuals(DEE_full))
+
+## Taking out season
+DEE_no_ranef <- lm(kJ_day~log(Sum_flowers)+ meanTemp + maxTemp +Initial_mass_g,
+                 data= dlw_merged_models)
+summary(DEE_no_ranef)
+
+
+## Taking out temps
+DEE_resource_mass <- lmer(kJ_day~log(Sum_flowers) + Initial_mass_g +(1|Season),  REML=F, data= dlw_merged_models)
+summary(DEE_resource_mass)
+
+DEE_resource_temps <- lmer(kJ_day~log(Sum_flowers) + Initial_mass_g +(1|Season),  REML=F, data= dlw_merged_models)
+summary(DEE_resource_temps)
+
+DEE_resource <- lmer(kJ_day~log(Sum_flowers) +(1|Season), REML=F, data= dlw_merged_models)
+summary(DEE_resource)
+
+DEE_temps <- lmer(kJ_day~ meanTemp + maxTemp +(1|Season), REML=F, data= dlw_merged_models)
+summary(DEE_temps)
+
+
+DEE_resource_noranef <- lm(kJ_day~log(Sum_flowers), data= dlw_merged_models)
+summary(DEE_resource_noranef)
+coef(DEE_resource_noranef)
+plot(DEE_resource_noranef)
+
+
+anova(DEE_full, DEE_no_ranef, DEE_resource_mass, DEE_resource_temps, DEE_resource, DEE_resource_noranef, DEE_temps)
+
+
