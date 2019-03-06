@@ -12,6 +12,7 @@ require(stringr)
 require(MCMCglmm)
 require(lme4)
 library(lmerTest)
+library(multcomp) ## for glht function for plotting lme4 results
 
 ## Set working directory
 setwd("C:\\Users\\nushi\\Dropbox\\Anusha Committee\\BBLH_EnergyBudget\\Submission_FuncEcol\\Data/")
@@ -77,7 +78,7 @@ dlw_merged_models <- merge(dlw_merged_models, flo.season_site_sum, by=c("Site", 
 
 
 #### Models ####
-DEE_full <- lmer(kJ_day~log(Sum_flowers)+ meanTemp + maxTemp +Initial_mass_g +(1|Season), REML=F,
+DEE_full <- lmer(kJ_day~log(Sum_flowers)+ meanTemp + maxTemp +Initial_mass_g +(log(Sum_flowers)|Site_proxy), REML=F,
                                data= dlw_merged_models)
 summary(DEE_full)
 coef(DEE_full)
@@ -92,16 +93,16 @@ summary(DEE_no_ranef)
 
 
 ## Taking out temps
-DEE_resource_mass <- lmer(kJ_day~log(Sum_flowers) + Initial_mass_g +(1|Season),  REML=F, data= dlw_merged_models)
+DEE_resource_mass <- lmer(kJ_day~log(Sum_flowers) + Initial_mass_g +(1|Site_proxy),  REML=F, data= dlw_merged_models)
 summary(DEE_resource_mass)
 
-DEE_resource_temps <- lmer(kJ_day~log(Sum_flowers) + Initial_mass_g +(1|Season),  REML=F, data= dlw_merged_models)
+DEE_resource_temps <- lmer(kJ_day~log(Sum_flowers) + Initial_mass_g +(1|Site_proxy),  REML=F, data= dlw_merged_models)
 summary(DEE_resource_temps)
 
-DEE_resource <- lmer(kJ_day~log(Sum_flowers) +(1|Season), REML=F, data= dlw_merged_models)
+DEE_resource <- lmer(kJ_day~log(Sum_flowers) +(1|Site_proxy), REML=F, data= dlw_merged_models)
 summary(DEE_resource)
 
-DEE_temps <- lmer(kJ_day~ meanTemp + maxTemp +(1|Season), REML=F, data= dlw_merged_models)
+DEE_temps <- lmer(kJ_day~ meanTemp + maxTemp +(1|Site_proxy), REML=F, data= dlw_merged_models)
 summary(DEE_temps)
 
 
@@ -113,4 +114,7 @@ plot(DEE_resource_noranef)
 
 anova(DEE_full, DEE_no_ranef, DEE_resource_mass, DEE_resource_temps, DEE_resource, DEE_resource_noranef, DEE_temps)
 
-
+tmp <- as.data.frame(confint(glht(DEE_resource_mass, mcp(Site_proxy = "Tukey")))$confint)
+tmp$Comparison <- rownames(tmp)
+ggplot(tmp, aes(x = Comparison, y = Estimate, ymin = lwr, ymax = upr)) +
+  geom_errorbar() + geom_point()
