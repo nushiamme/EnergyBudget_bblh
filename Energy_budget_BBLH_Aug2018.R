@@ -27,7 +27,7 @@ setwd("C:\\Users\\nushi\\Dropbox\\Anusha Committee\\BBLH_EnergyBudget\\Submissio
 
 #### Read in files #### 
 #Includes min and max 24h cost by varying activity; per activity, thermo, NEE and BMR scenario; and adjusting hovering for thermoregulatory substitution
-energymodels <- read.csv("EnergyBudget_model_values.csv") # Fir figures 2b and 3
+energymodels <- read.csv("EnergyBudget_model_values.csv") # For figures 2b and 3
 dlw_bblh <- read.csv("DLW_summary.csv") ## For Figure 2 
 costas <- read.csv("Costas1986_VO2_DRPowers.csv") ## For Supp fig S3
 
