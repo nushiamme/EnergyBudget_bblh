@@ -123,7 +123,11 @@ m_energymodels_therm <- as.data.frame(as.list(aggregate(mm_energymodels$kJ_day,
                                                         FUN = function(x) c(mi = min(x), mn = mean(x), mx = max(x)))))
 names(m_energymodels_therm) <- c("Activity_budget_type", "Site_proxy", "Thermoreg_scenario",
                                  "Min_kJ_day", "kJ_day", "Max_kJ_day")
+m_energymodels_therm$Activity_budget_type <- factor(m_energymodels_therm$Activity_budget_type,
+                                                levels= c("5_20_75", "15_15_70", "25_30_45", "40_40_20"))
+
 head(m_energymodels_therm)
+
 
 ## Allowing everything to vary, aggregate by thermoregulatory scenario and activity scenario
 m_energymodels_mean$Activity_budget_type <- factor(m_energymodels_mean$Activity_budget_type,
@@ -208,67 +212,90 @@ names(kJ_split_full_model) <- c("Model_component", "Thermoreg_scenario",
 write.csv(kJ_split_full_model,file="kJ_splitEB_May.csv")
 
 #### plots ####
-#### Figure 2a ####
-dlw_bblh$ind_band <- dlw_bblh$Band_no
-dlw_bblh$ind_band[dlw_bblh$ind_band==""] <- NA
-## Just DLW boxplots and points with recap individuals colored for Figure 2 (as of April 3, 2017)
-dlw_indiv <- ggplot(dlw_bblh, aes(Site_proxy, kJ_day)) + 
+## Figure 2
+## March 25, 2019. Response to reviewer comments on Figure 2
+## Plotting DLW values, individual points, and model values all on the same plot, and 
+## splitting by site rather than by DLW/model
+#### Figure 2a Harshaw ####
+Harshaw_dlw <- dlw_bblh[dlw_bblh$Site=="HC",]
+Harshaw_dlw<- droplevels(Harshaw_dlw)
+dlw_models_hc <- ggplot(Harshaw_dlw, aes(Site_proxy, kJ_day)) + my_theme2 +
   geom_boxplot(alpha=0.5, fill="light grey") +
-  geom_point(aes(col=Band_no, size=Band_no), alpha=0.9) + my_theme2 +
-  geom_line(data=dlw_bblh[!is.na(dlw_bblh$ind_band),], aes(group=ind_band, col=ind_band), size=1) +
-  scale_colour_manual(values=c("black", "red", "green", "purple")) +
-  scale_size_manual(values=c(4, 6, 6, 6)) +
-  scale_x_discrete(breaks=c('A','B','C','D'),
-                   labels=c("Harshaw \n Dry", "Harshaw\nEarly-wet", "Sonoita \n Dry", "Sonoita \n Early-wet")) +
-  stat_summary(fun.data = give.n, geom = "text", hjust=-0.5, vjust=-1.8, size=9) +
+  geom_point(data=Harshaw_dlw[is.na(Harshaw_dlw$Band_no_recaps),], size=4, alpha=0.9) +
+  geom_line(data=Harshaw_dlw[!is.na(Harshaw_dlw$Band_no_recaps),], aes(group=Band_no_recaps), size=1, linetype = 2) +
+  geom_point(data=Harshaw_dlw[!is.na(Harshaw_dlw$Band_no_recaps),], aes(fill=Band_no_recaps), pch=21, size=5, alpha=0.9) + 
+  scale_fill_manual(values = c("red", "green", "purple")) +
+  scale_x_discrete(breaks=c('A','B'),
+                   labels=c("Dry", "Early-wet")) +
+  stat_summary(fun.data = give.n, geom = "text", hjust=1.5, vjust=-4.5, size=9) +
   theme(legend.position = 'none', axis.ticks.x = element_blank(),
         axis.ticks.y = element_line(size=2),
         axis.text = element_text(color = 'black', hjust=0.5),
         axis.title = element_text(face='bold'),
-        axis.title.y = element_text(hjust=0.5)) + ylim(9,41) +
-  xlab("Site and season") + 
-  ylab("Daily \n energy expenditure (kJ)")
-
-#### Figure 2b ####
-## AUGUST 2018 plot adjusting Hovering and thermo, and including individual variation in activity costs
-all_model_plot <- ggplot(NULL, aes(Site_proxy, kJ_day)) +
-  geom_boxplot(data=dlw_bblh,aes(Site_proxy, kJ_day), fill="grey90",  width = 0.5, lwd=1) + 
-  geom_linerange(data=m_energymodels_therm, #with everything varying
+        axis.title.y = element_text(hjust=0.5),
+        plot.title = element_text(hjust = 0.5)) + ylim(9,41) +
+  geom_linerange(data=m_energymodels_therm[m_energymodels_therm$Site_proxy %in% c("A", "B"),], #with everything varying
                  aes(Site_proxy, ymin = Min_kJ_day, ymax = Max_kJ_day, 
                      color = Activity_budget_type),
-                 position=position_dodge(width=0.5),
+                 position=position_dodge(width = 0.8),
                  size = 2, alpha = 0.4) + 
-  geom_linerange(data=m_energymodels_act, #with only activity costs varying
+  geom_linerange(data=m_energymodels_act[m_energymodels_act$Site_proxy %in% c("A", "B"),], #with only activity costs varying
                  aes(x=Site_proxy, ymin = Min_kJ_day, ymax = Max_kJ_day, 
                      color = Activity_budget_type), 
-                 position=position_dodge(width=0.5), 
+                 position=position_dodge(width=0.8), 
                  size = 5, alpha = 0.4) + 
-  geom_linerange(data=m_energymodels_avg_act, #with average activity costs
+  geom_linerange(data=m_energymodels_avg_act[m_energymodels_avg_act$Site_proxy %in% c("A", "B"),], #with average activity costs
                  aes(Site_proxy, ymin = Min_kJ_day, ymax = Max_kJ_day, 
                      color = Activity_budget_type), 
-                 position=position_dodge(width=0.5), 
+                 position=position_dodge(width=0.8), 
                  size = 5) +
   scale_color_manual(values = c('darkgreen', 'orangered2', 'slateblue4', 'violetred3'), 
                      guide = guide_legend(title = "Activity budget \n percent time \n hover_fly_perch")) +
-  scale_x_discrete(breaks=c('A', 'B', 'C', 'D'), 
-                   labels=c("Harshaw \n Dry", "Harshaw\nEarly-wet", "Sonoita \n Dry",
-                            "Sonoita \n Early-wet")) +
-  ylim(9, 41) + my_theme2 + theme(legend.key.size = unit(4, 'lines'), 
-                                  legend.key.height = unit(4, 'lines'),
-                                  legend.margin = margin(t=0.5, unit='cm'),
-                                  legend.title.align = 0.5,
-                                  legend.text.align = 0.5,
-                                  #legend.text=element_text(size=32),
-                                  axis.ticks.x = element_blank(),
-                                  axis.ticks.y = element_line(size=2),
-                                  axis.text = element_text(color = 'black', hjust=0.5),
-                                  axis.title = element_text(face='bold'),
-                                  axis.title.y = element_text(hjust=0.5)) +
-  xlab("Site and season") + ylab("")#ylab("Daily \n energy expenditure (kJ)")
+  ggtitle("Harshaw") + xlab("Season") + ylab("Daily \n energy expenditure (kJ)\n")
 
+#### Figure 2a Sonoita ####
+Sonoita_dlw <- dlw_bblh[dlw_bblh$Site=="SC",]
+Sonoita_dlw<- droplevels(Sonoita_dlw)
+dlw_models_sc <- ggplot(Sonoita_dlw, aes(Site_proxy, kJ_day)) + my_theme2 +
+  geom_boxplot(alpha=0.5, fill="light grey") +
+  geom_point(data=Sonoita_dlw[is.na(Sonoita_dlw$Band_no_recaps),], size=4, alpha=0.9) +
+  scale_x_discrete(breaks=c('C','D'),
+                   labels=c("Dry", "Early-wet")) +
+  stat_summary(fun.data = give.n, geom = "text", hjust=1.5, vjust=-3.5, size=9) +
+  geom_linerange(data=m_energymodels_therm[m_energymodels_therm$Site_proxy %in% c("C", "D"),], #with everything varying
+                 aes(Site_proxy, ymin = Min_kJ_day, ymax = Max_kJ_day, 
+                     color = Activity_budget_type),
+                 position=position_dodge(width = 0.8),
+                 size = 2, alpha = 0.4) + 
+  geom_linerange(data=m_energymodels_act[m_energymodels_act$Site_proxy %in% c("C", "D"),], #with only activity costs varying
+                 aes(x=Site_proxy, ymin = Min_kJ_day, ymax = Max_kJ_day, 
+                     color = Activity_budget_type), 
+                 position=position_dodge(width=0.8), 
+                 size = 5, alpha = 0.4) + 
+  geom_linerange(data=m_energymodels_avg_act[m_energymodels_avg_act$Site_proxy %in% c("C", "D"),], #with average activity costs
+                 aes(Site_proxy, ymin = Min_kJ_day, ymax = Max_kJ_day, 
+                     color = Activity_budget_type), 
+                 position=position_dodge(width=0.8), 
+                 size = 5) +
+  scale_color_manual(values = c('darkgreen', 'orangered2', 'slateblue4', 'violetred3'), 
+                     guide = guide_legend(title = "Activity budget \n percent time \n hover_fly_perch")) +
+  theme(legend.key.size = unit(4, 'lines'), 
+        legend.key.height = unit(4, 'lines'),
+        legend.margin = margin(t=0.5, unit='cm'),
+        legend.title.align = 0.5,
+        legend.text.align = 0.5,
+        #legend.text=element_text(size=32),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_line(size=2),
+        axis.text = element_text(color = 'black', hjust=0.5),
+        axis.title = element_text(face='bold'),
+        axis.title.y = element_text(hjust=0.5),
+        plot.title = element_text(hjust = 0.5)) +
+  ggtitle("Sonoita") + xlab("Season") + ylab("")#ylab("Daily \n energy expenditure (kJ)")
 
-#### Figure 2, arranging DLW plot with all model plot ####
-grid.arrange(dlw_indiv, all_model_plot, nrow=1, widths = c(1,2))
+#### Figure 2, arranging HC and SC's DLW + models plots together ####
+grid.arrange(dlw_models_hc, dlw_models_sc, nrow=1, widths = c(1,1.2))
+
 
 #### Figure 3 ####
 ## Stacked bar plots for breaking down energy budget, just one site+date at a time
