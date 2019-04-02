@@ -96,16 +96,16 @@ plot(ranef(DEE_full))
 plot(residuals(DEE_full))
 
 ## Taking out season
-DEE_no_ranef <- lm(kJ_day~log(Sum_flowers)+ meanTemp + maxTemp +Initial_mass_g,
-                 data= dlw_merged_models)
-summary(DEE_no_ranef)
+#DEE_no_ranef <- lm(kJ_day~log(Sum_flowers)+ meanTemp + maxTemp +Initial_mass_g,
+#                 data= dlw_merged_models)
+#summary(DEE_no_ranef)
 
 
 ## Taking out temps
 DEE_resource_mass <- lmer(kJ_day~log(Sum_flowers) + Initial_mass_g +(1|Site_proxy),  REML=F, data= dlw_merged_models)
 summary(DEE_resource_mass)
 
-DEE_resource_temps <- lmer(kJ_day~log(Sum_flowers) + Initial_mass_g +(1|Site_proxy),  REML=F, data= dlw_merged_models)
+DEE_resource_temps <- lmer(kJ_day~log(Sum_flowers) + meanTemp + maxTemp +(1|Site_proxy),  REML=F, data= dlw_merged_models)
 summary(DEE_resource_temps)
 
 DEE_resource <- lmer(kJ_day~log(Sum_flowers) +(1|Site_proxy), REML=F, data= dlw_merged_models)
@@ -121,7 +121,7 @@ coef(DEE_resource_noranef)
 plot(DEE_resource_noranef)
 
 
-anova(DEE_full, DEE_no_ranef, DEE_resource_mass, DEE_resource_temps, DEE_resource, DEE_resource_noranef, DEE_temps)
+anova(DEE_full, DEE_resource_mass, DEE_resource_temps, DEE_resource, DEE_resource_noranef, DEE_temps)
 
 tmp <- as.data.frame(confint(glht(DEE_resource_mass, mcp(Site_proxy = "Tukey")))$confint)
 tmp$Comparison <- rownames(tmp)

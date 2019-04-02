@@ -54,3 +54,22 @@ ggplot(dflo[dflo$Flowers>0,], aes(Season, log(Flowers))) + #facet_grid(~Site, sc
   #geom_text(aes(label=Flowers), hjust=-0.3, size=6, position=position_jitter(width=0.3)) +
   my_theme + theme(legend.key.height = unit(3,"line")) +
   xlab("Season")
+
+ggplot(dflo[dflo$Flowers>0,], aes(Season, log(Flowers))) + #facet_grid(~Site, scales="free_x") +
+  geom_boxplot(aes(fill=Site), position="dodge", show.legend = F, alpha=0.7) + 
+  geom_point(aes(x=Season, size=log(Flowers)), alpha=0.8, show.legend = F) + facet_grid(~Site) +
+  scale_fill_manual(values=c("grey", "red")) +
+  #geom_text(aes(label=Flowers), hjust=-0.3, size=6, position=position_jitter(width=0.3)) +
+  xlab("Season") + theme(axis.text.x = element_text(size=12),
+      axis.text.y = element_text(size=12,color="black"),
+      axis.title.y=element_text(size=20),
+      plot.background = element_blank(),
+      panel.border=element_blank(),
+      panel.grid.major= element_line(colour=NA), 
+      panel.grid.minor=element_line(colour=NA),
+      title=element_text(size=20),
+      panel.background = element_rect(fill = "white"),
+      axis.line.x=element_line(colour="black"),
+      axis.line.y=element_line(colour="black"),
+      strip.background=element_rect(fill="white", color="black"),
+      strip.text=element_text(size=15))
