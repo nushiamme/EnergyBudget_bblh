@@ -16,16 +16,12 @@ require(multcomp) ## for glht function for plotting lme4 results
 
 ## Set working directory
 setwd("C:\\Users\\nushi\\Dropbox\\Anusha Committee\\BBLH_EnergyBudget\\Submission_FuncEcol\\Data/")
-## wd at GFU
-#setwd("/Users/anshankar/Dropbox/Anusha Committee/BBLH_EnergyBudget/Tables")
 
 ## Read in resource files
 floral <- read.csv("FloralCensusData2013.csv") #ver3 
 floralsumm <- floral[floral$Site %in% c("Harshaw", "Sonoita"),]
 
 ##Temperature files
-## Read in file with temperature from each sensor per hour per site (hence temp "details")
-temp_details <- read.csv("BBLH_temperatures_compiled.csv")
 ## Read in premelted dataframes with temperatures and calculated thermoregulatory costs
 m.ta_det <- read.csv("Melted_Ta_thermo.csv")
 
@@ -34,7 +30,6 @@ my_theme <- theme_classic(base_size = 30) +
   theme(panel.border = element_rect(colour = "black", fill=NA))
 
 ## DEE and EB model files
-energymodels <- read.csv("EnergyBudget_model_values.csv") # Fir figures 2b and 3
 dlw_bblh <- read.csv("DLW_summary.csv") ## For Figure 2 
 dlw_bblh$DayMonthYear <- paste0(str_pad(dlw_bblh$Day, 2, pad = "0"), "0", dlw_bblh$Month, dlw_bblh$Year)
 
@@ -70,21 +65,6 @@ temp.summ <- ddply(m.ta_det, .(DayMonthYear, Site), summarise,
 dlw_merged_models <- merge(dlw_bblh, temp.summ, by=c("Site", "DayMonthYear"))
 
 dlw_merged_models <- merge(dlw_merged_models, flo.season_site_sum, by=c("Site", "Season"))
-
-#### Plot temperatures by sensor and site to send to Don #### 
-m.ta_det$Day_night <- 0
-m.ta_det$Day_night[600<m.ta_det$Hour& m.ta_det$Hour<1900] <- "Day"
-m.ta_det$Day_night[m.ta_det$Hour<700 | 1800<m.ta_det$Hour] <- "Night"
-m.ta_det$Day_night <- factor(m.ta_det$Day_night, levels=c('Night', "Day"))
-## Just at night
-ggplot(m.ta_det[m.ta_det$Day_night=="Night",], aes(DayMonthYear, Ta)) + my_theme +
-  theme(axis.text.x = element_text(angle=90, size = 10)) + geom_line(aes(col=Sensor), size=2) + 
-  facet_grid(.~Site) + ggtitle("Night")
-
-## Just during the day
-ggplot(m.ta_det[m.ta_det$Day_night=="Day",], aes(DayMonthYear, Ta)) + my_theme +
-  theme(axis.text.x = element_text(angle=90, size = 10)) + geom_line(aes(col=Sensor), size=2) + 
-  facet_grid(.~Site) + ggtitle("Day")
 
 #### Models ####
 DEE_full <- lmer(kJ_day~log(Sum_flowers)+ meanTemp + maxTemp +Initial_mass_g +(1|Site_proxy), REML=F,
