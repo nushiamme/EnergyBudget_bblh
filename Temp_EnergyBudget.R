@@ -59,13 +59,13 @@ temp_details$Day_night <- factor(temp_details$Day_night, levels=c('Night', "Day"
 temp_details$Site <- factor(temp_details$Site, levels=c("SC", "HC"))
 ggplot(temp_details, aes(Ta_mean)) + 
   geom_density(aes(fill=Site),alpha=0.7) + 
-  scale_y_continuous(labels = scales::percent, name = "Percentage of values") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), name = "Percentage of values") +
   xlab(Ta.lab) + 
   geom_line(aes(col=Site), stat="density", size = 1) +
   geom_rug(aes(x = Ta_mean, y = 0, col=Site), alpha=0.3, position = position_jitter(height = 0)) +
   my_theme + facet_grid(~Day_night) + #coord_flip() + 
-  theme(legend.key.height = unit(3, 'lines'), axis.text.x=element_text(angle=30, vjust=0.5)) + 
-  scale_fill_manual(values = c('red', 'grey'), labels=c("Sonoita", "Harshaw")) +
+  theme(legend.key.height = unit(3, 'lines'), axis.text.x=element_text(angle=90, vjust=0.5, size=20)) + 
+  scale_fill_manual(values = c('red', 'grey'), guide=F) +
   scale_color_manual(values = c('red', 'grey'), guide=F)
 
 # Building a model for thermoregulatory costs ####

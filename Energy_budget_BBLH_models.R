@@ -8,6 +8,8 @@ require(ggplot2)
 require(dplyr)
 require(stringr)
 require(lme4)
+require(gnm) ## Trying out non-linear predictor terms
+
 
 ## Set working directory
 setwd("C:\\Users\\nushi\\Dropbox\\Anusha Committee\\BBLH_EnergyBudget\\Submission_FuncEcol\\Data/")
@@ -68,6 +70,12 @@ plot(DEE_full)
 plot(ranef(DEE_full))
 plot(residuals(DEE_full))
 
+## DO #####
+#starts.nlme <- c(log(Sum_flowers) = )
+DEE_full_nlme <- lmer(kJ_day~log(Sum_flowers)+ poly(meanTemp,degree = 2) +Initial_mass_g +(1|Site_proxy),
+                 data= dlw_merged_models)
+summary(DEE_full_nlme)
+
 ## Taking out just temps from Full
 DEE_resource_mass <- lmer(kJ_day~log(Sum_flowers) + Initial_mass_g +(1|Site_proxy),  REML=F, data= dlw_merged_models)
 summary(DEE_resource_mass)
@@ -92,4 +100,16 @@ coef(DEE_resource_noranef)
 plot(DEE_resource_noranef)
 
 
-anova(DEE_full, DEE_resource_mass, DEE_resource_temps, DEE_resource, DEE_resource_noranef, DEE_temps)
+DEE_nls_resource_noranef <- nls(kJ_day~a+b*log(Sum_flowers), data= dlw_merged_models, start=list(a=40.96,b=-1.73))
+summary(DEE_nls_resource_noranef)
+
+lines(poly(dlw_merged_models$meanTemp,degree = 2))
+
+plot(dlw_merged_models$meanTemp, dlw_merged_models$kJ_day)
+plot(log(dlw_merged_models$Sum_flowers), dlw_merged_models$kJ_day)
+cor(log(dlw_merged_models$Sum_flowers), predict(DEE_nls_resource_noranef))
+lines(log(dlw_merged_models$Sum_flowers), predict(DEE_nls_resource_noranef),col="red",lty=2,lwd=3)
+plot(dlw_merged_models$minTemp, dlw_merged_models$kJ_day)
+
+anova(DEE_full, DEE_full_nlme, DEE_resource_mass, DEE_resource_temps, DEE_resource, DEE_resource_noranef,
+      DEE_temps)

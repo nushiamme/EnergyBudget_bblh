@@ -15,6 +15,7 @@ setwd("C:\\Users\\nushi\\Dropbox\\Anusha Committee\\BBLH_EnergyBudget\\Submissio
 ## Read in file
 floral <- read.csv("FloralCensusData2013.csv")
 floralsumm <- floral[floral$Site %in% c("Harshaw", "Sonoita"),]
+Pointsumm <- read.csv("Floral_forPointSummaries.csv")
 
 #### New columns/dataframes ####
 colnames(floralsumm)[colnames(floralsumm)=="Pre_post"] <- "Season"
@@ -26,6 +27,31 @@ dflo <- summarize(flo, Flowers = sum(TotalFlowers, na.rm = T))
 dflo$Site_Season <- paste(dflo$Site, dflo$Season, sep="_")
 dflo$Site_Season <- factor(dflo$Season, levels = c("Harshaw_Dry", "Harshaw_Early-wet", 
                                                        "Sonoita_Dry", "Sonoita_Early-wet"))
+
+## For point-wise averages
+colnames(Pointsumm)[colnames(Pointsumm)=="Pre_post"] <- "Season"
+Pointsumm$Season<- plyr::revalue(Pointsumm$Season, c("Pre"="Dry", "Post"="Early-wet"))
+pflo <- group_by(Pointsumm, Site, Transect, Season, Site_Transect_Point)
+## If this only creates a single-value dataframe, it's because because R is using plyr::summarise instead of 
+## dplyr's summarise. Solution: Don't require(plyr)
+d.pflo <- summarize(pflo, Flowers = sum(TotalFlowers, na.rm = T))
+d.pflo$Site_Season <- paste(d.pflo$Site, d.pflo$Season, sep=" ")
+d.pflo$Site_Season <- factor(d.pflo$Site_Season, levels = c("Harshaw Dry", "Harshaw Early-wet", 
+                                                   "Sonoita Dry", "Sonoita Early-wet"))
+mean(d.pflo$Flowers[d.pflo$Site=="HC"])
+
+## Plotting log(flowers) per hectare per site-season. Points are flower sums per point count
+ggplot(d.pflo[d.pflo$Flowers>0,], aes(Site_Season,(log(Flowers)/.2827))) + geom_boxplot() + geom_point() + 
+  my_theme + ylab("log(Flowers) per hectare")
+
+## Figure 1e: plot of resources per hectare at Hawshaw vs Sonoita, Dry- vs early-wet
+ggplot(d.pflo[d.pflo$Flowers>0,], aes(Season, (log(Flowers)/.2827))) + #facet_grid(~Site, scales="free_x") +
+  geom_boxplot(aes(fill=Site), position="dodge", show.legend = F, alpha=0.7) + 
+  geom_point(aes(x=Season, size=log(Flowers)), alpha=0.8, show.legend = F) + facet_grid(~Site) +
+  scale_fill_manual(values=c("grey", "red")) +
+  #geom_text(aes(label=Flowers), hjust=-0.3, size=6, position=position_jitter(width=0.3)) +
+  my_theme + theme(legend.key.height = unit(3,"line")) +
+  xlab("Season") + ylab("log(Flowers) per hectare")
 
 #### General functions ####
 ## Saving standard theme  
