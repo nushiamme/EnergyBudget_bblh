@@ -2,6 +2,19 @@
 
 Code by: Anusha Shankar, github/nushiamme; contact: nushiamme\<at\>gmail\<dot\>com for questions about code/datasets
 
+
+#### Zenodo archive
+[![DOI](https://zenodo.org/badge/145764334.svg)](https://zenodo.org/badge/latestdoi/145764334)
+
+#### Abstract
+1.	Managing energy stores in response to variable resource availability is a key component to individual fitness, yet because directly measuring energy budgets is difficult, daily energy management is rarely measured. 
+2.	Hummingbirds' energy management is relatively simple to model compared to other endotherms because they have high mass-specific metabolic rates and store little fat. 
+3.	We determined which aspects of the hummingbird daily energy budget (i.e. thermoregulation, daytime activity costs, nighttime costs) change at the individual level in response to environmental variation. 
+4.	We found that daily energy expenditure varied three-fold in two populations of broad-billed hummingbirds (Cynanthus latirostris). 
+5.	Our model indicated the energy budget was distributed in the following proportions: daytime activity, 59% (range 22-84%); thermoregulation, 23% (11 - 32%), basal metabolism, 7% (3 - 16%), and nighttime energy 17% (6 - 37%).   Activity costs were higher at the hotter, homogeneous site and during the early-wet season at both sites.
+6.	Increased daily energy expenditure was related to decreased nectar availability, and not significantly related to temperature or bird mass. With climate change, the indirect energetic costs of shifting resources could have greater impacts on endotherm energy budgets than direct costs such as thermoregulation. Increased foraging and activity costs could decrease the energy available to birds for somatic repair and reproduction, potentially causing differential fitness across seasons and sites.
+
+
 #### Code organisation
 
 The code is organized by data type into 4 scripts, for
