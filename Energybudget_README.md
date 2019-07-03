@@ -1,4 +1,4 @@
-**Paper authors: A Shankar, CH Graham, JR Canepa, SM Wethington, DR Powers**
+**Paper authors: Anusha Shankar, Catherine H Graham, Joseph R Canepa, Susan M Wethington, Donald R Powers**
 
 Code by: Anusha Shankar, github/nushiamme; contact: nushiamme\<at\>gmail\<dot\>com for questions about code/datasets
 
