@@ -313,6 +313,28 @@ pl_vSC0207 <- ggplot(m_energymodels_stack[m_energymodels_stack$Site_date=="SC207
   guides(fill = guide_legend(title="Energy budget \n component"))
 
 
+### To make just the DLW data, but in a black-background plot. Not used in the paper
+ggplot(dlw_bblh, aes(Site_proxy, kJ_day)) + theme_jetblack(base_size = 20) +
+  geom_boxplot(alpha=0.5, fill="grey30", col="grey80") +
+  geom_point(data=dlw_bblh[is.na(dlw_bblh$Band_no_recaps),], col="white", size=3, alpha=0.9) +
+  geom_line(data=dlw_bblh[!is.na(dlw_bblh$Band_no_recaps),], aes(group=Band_no_recaps, col=Band_no_recaps), size=1, linetype = 2) +
+  geom_point(data=dlw_bblh[!is.na(dlw_bblh$Band_no_recaps),], aes(fill=Band_no_recaps),  pch=21, size=5, alpha=0.9) + 
+  scale_fill_manual(values = c("red", "green", "purple")) +
+  scale_color_manual(values = c("red", "green", "purple")) +
+  scale_x_discrete(breaks=c('A','B', 'C', 'D'),
+                   labels=c("Cooler, Wet \n Pre", "Cooler, Wet \n Post", "Hotter, Dry \n Pre", "Hotter, Dry \n Post")) +
+  stat_summary(fun.data = give.n, geom = "text", hjust=-0.5, vjust=-2, size=5, col="white") +
+  theme(panel.border = element_rect(colour = "grey80", fill=NA),
+        legend.position = 'none', axis.ticks.x = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.ticks.y = element_line(size=2),
+        axis.text = element_text(color = 'black', hjust=0.5),
+        axis.title = element_text(face='bold'),
+        axis.title.y = element_text(hjust=0.5),
+        plot.title = element_text(hjust = 0.5)) + ylim(9,41) +
+  xlab("Season") + ylab("Daily \n energy expenditure (kJ)\n")
+
 #### Supplementary plots ####
 #### Figure S1: DLW Validation plots ####
 # Figure S1a: Enrichment vs. DLW dose (g)
